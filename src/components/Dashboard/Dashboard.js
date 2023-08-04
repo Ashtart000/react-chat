@@ -6,21 +6,17 @@ import { UserContext } from '../../contexts/UserContext';
 import { getData } from '../../api';
 import CONSTANTS from '../../constants';
 import styles from './Dashboard.module.scss';
+import { reducer } from '../../reducers';
 const { ACTIONS } = CONSTANTS
-
-function reducer(state, action) {
-
-}
 
 const Dashboard = () => {
     const [user, setUser] = useState({
-        id: 1,
         username: 'c123s',
-        avatart: 'https://robohash.org/c123s.png'
     })
 
     const [state, dispatch] = useReducer(reducer, {
-        messages: []
+        messages: [],
+        error: null
     })
 
     useEffect(() => {
@@ -35,22 +31,40 @@ const Dashboard = () => {
         })
         .catch((error) => {
             dispatch({
-                type: ACTIONS.DATA_LOAD_ERROR
+                type: ACTIONS.DATA_LOAD_ERROR,
+                payload: {
+                    error
+                }
             })
         })
     }, [])
 
+    const createMessage = (text) => {
+        const {messages} = state;
+        const newMessage = {
+            body: text,
+            id: messages.length + 1,
+            user
+        }
+        dispatch({
+            type: ACTIONS.ADD_NEW_MESSAGE,
+            payload: {
+                newMessage
+            }
+        })
+    }
+
     return (
         <UserContext.Provider value={user}>
-        <main className={styles.container}>
-            <DialogList />
+            <main className={styles.container}>
+            <DialogList /> {/* row */}
             <section className={styles.wrapper}>
-                <Chat />
-                <MessageArea />
+                <Chat dialog={state.messages} /> {/* column */}
+                <MessageArea addMessage={createMessage} /> {/* column */}
             </section>
         </main>
         </UserContext.Provider>
-    );
+    )
 }
 
 export default Dashboard;

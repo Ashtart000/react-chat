@@ -1,10 +1,14 @@
 import React from 'react';
 import styles from './Chat.module.scss'
+import ChatItem from './ChatItem';
 
-const Chat = () => {
+const Chat = (props) => {
+    const {dialog} = props;
+    const messageArray = dialog.map((message) => <ChatItem message={message} key={message.id} />)
+
     return (
         <div className={styles.container}>
-            Chat
+            {messageArray}
         </div>
     );
 }
